@@ -13,5 +13,6 @@ module.exports = {
           .subtract(daysToSubtract, "days")
           .format("DD-MM-YYYY")}`
     );
+    return 0
   },
 };

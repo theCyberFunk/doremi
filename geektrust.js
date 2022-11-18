@@ -1,8 +1,9 @@
-const fs = require("fs");
-
-const filename = process.argv[2],
+const fs = require("fs"),
+  filename = process.argv[2],
   dayjs = require("dayjs"),
-  customParseFormat = require("dayjs/plugin/customParseFormat");
+  customParseFormat = require("dayjs/plugin/customParseFormat"),
+  runner = require("./helpers").runner;
+
 dayjs.extend(customParseFormat);
 
 fs.readFile(filename, "utf8", (err, data) => {
