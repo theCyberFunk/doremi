@@ -8,91 +8,97 @@ dayjs.extend(customParseFormat);
 
 fs.readFile(filename, "utf8", (err, data) => {
   if (err) throw err;
-  let inputLines = data.toString().split("\n");
+  let inputLines = data.toString().split("\r\n");
+  // console.log(inputLines)
 
   let startDate,
-    subsToAdd = {},
     topupToAdd = {},
     renewalAmount = 0;
 
   // Add your code here to process input commands
-
+  // this loop populates the declared varibales above //
   for (const line of inputLines) {
+    // console.log(line)
     if (line.startsWith("START_SUBSCRIPTION")) {
+      // checks for valid date
       if (!dayjs(line.split(" ")[1], "DD-MM-YYYY", true).isValid()) {
         console.log("ADD_SUBSCRIPTION_FAILED INVALID_DATE");
         return;
       }
-      date = line.split(" ")[1].split("-");
+
+      // date parsing
+      let date = line.split(" ")[1].split("-");
       startDate = new Date(
         parseInt(date[2]),
         parseInt(date[1]),
         parseInt(date[0])
       );
     }
+
     if (line.startsWith("ADD_SUBSCRIPTION")) {
-      subsToAdd[line.split(" ")[1]] = line.split(" ")[2];
+      // subsToAdd[line.split(" ")[1]] = line.split(" ")[2];
+      let category = line.split(" ")[1],
+        type = line.split(" ")[2];
+
+      // console.log(category, type);
+      switch (category) {
+        case "MUSIC":
+          switch (type) {
+            case "FREE":
+              console.log(runner("MUSIC", startDate, 1, 10));
+              break;
+
+            case "PERSONAL":
+              renewalAmount += 100;
+              console.log(runner("MUSIC", startDate, 1, 10));
+            break;
+
+            case "PREMIUM":
+              renewalAmount += 250;
+              console.log(runner("MUSIC", startDate, 3, 10));   
+              break;
+          }
+          break;
+
+        case "VIDEO":
+          switch (type) {
+            case "FREE":
+              console.log(runner("VIDEO", startDate, 1, 10));
+              break;
+
+            case "PERSONAL":
+              renewalAmount += 200;
+              console.log(runner("VIDEO", startDate, 1, 10));
+              break;
+
+            case "PREMIUM":
+              renewalAmount += 500;
+              console.log(runner("VIDEO", startDate, 3, 10));
+              break;
+          }
+          break;
+
+        case "PODCAST":
+          switch (type) {
+            case "FREE":
+              console.log(runner("PODCAST", startDate, 1, 10));
+              break;
+
+            case "PERSONAL":
+              renewalAmount += 100;
+              console.log(runner("PODCAST", startDate, 1, 10));
+              break;
+
+            case "PREMIUM":
+              renewalAmount += 300;
+              console.log(runner("PODCAST", startDate, 3, 10));
+              break;
+          }
+          break;
+      }
     }
     if (line.startsWith("ADD_TOPUP")) {
       topupToAdd[line.split(" ")[1]] = parseInt(line.split(" ")[2]);
-    }
-  }
-
-  for (const key in subsToAdd) {
-    switch (key) {
-      case "MUSIC":
-        switch (subsToAdd[key]) {
-          case "FREE":
-            runner("MUSIC", startDate, 1, 10);
-            break;
-
-          case "PERSONAL":
-            renewalAmount += 100;
-            runner("MUSIC", startDate, 1, 10);
-            break;
-
-          case "PREMIUM":
-            renewalAmount += 250;
-            runner("MUSIC", startDate, 3, 10);
-            break;
-        }
-        break;
-
-      case "VIDEO":
-        switch (subsToAdd[key]) {
-          case "FREE":
-            runner("VIDEO", startDate, 1, 10);
-            break;
-
-          case "PERSONAL":
-            renewalAmount += 200;
-            runner("VIDEO", startDate, 1, 10);
-            break;
-
-          case "PREMIUM":
-            renewalAmount += 500;
-            runner("VIDEO", startDate, 3, 10);
-            break;
-        }
-        break;
-
-      case "PODCAST":
-        switch (subsToAdd[key]) {
-          case "FREE":
-            runner("PODCAST", startDate, 1, 10);
-            break;
-
-          case "PERSONAL":
-            renewalAmount += 100;
-            runner("PODCAST", startDate, 1, 10);
-            break;
-
-          case "PREMIUM":
-            renewalAmount += 300;
-            runner("PODCAST", startDate, 3, 10);
-            break;
-        }
-        break;
     }
   }
 
