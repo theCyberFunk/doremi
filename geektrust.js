@@ -22,7 +22,8 @@ fs.readFile(filename, "utf8", (err, data) => {
   let startDate,
     subscriptions = [],
     topups = [],
-    amount = 0;
+    amount = 0,
+    isDateValid = true;
 
   // Add your code here to process input commands
 
@@ -30,17 +31,19 @@ fs.readFile(filename, "utf8", (err, data) => {
     if (line.startsWith("START_SUBSCRIPTION")) {
       // checks for valid date
       if (!dayjs(line.split(" ")[1], "DD-MM-YYYY", true).isValid()) {
-        console.log("ADD_SUBSCRIPTION_FAILED INVALID_DATE");
-        return;
+        console.error("INVALID_DATE");
+        isDateValid = false;
       }
 
       // date parsing
-      let date = line.split(" ")[1].split("-");
-      startDate = new Date(
-        parseInt(date[2]),
-        parseInt(date[1]),
-        parseInt(date[0])
-      );
+      if (isDateValid) {
+        let date = line.split(" ")[1].split("-");
+        startDate = new Date(
+          parseInt(date[2]),
+          parseInt(date[1]),
+          parseInt(date[0])
+        );
+      }
     }
 
     if (line.startsWith("ADD_SUBSCRIPTION")) {
@@ -53,6 +56,7 @@ fs.readFile(filename, "utf8", (err, data) => {
         switch (category) {
           case "MUSIC":
             amount += runner(
+              isDateValid,
               category,
               type,
               startDate,
@@ -63,6 +67,7 @@ fs.readFile(filename, "utf8", (err, data) => {
 
           case "VIDEO":
             amount += runner(
+              isDateValid,
               category,
               type,
               startDate,
@@ -73,6 +78,7 @@ fs.readFile(filename, "utf8", (err, data) => {
 
           case "PODCAST":
             amount += runner(
+              isDateValid,
               category,
               type,
               startDate,
@@ -81,7 +87,7 @@ fs.readFile(filename, "utf8", (err, data) => {
             );
             break;
         }
-        subscriptions.push(category);
+        isDateValid ? subscriptions.push(category) : null;
       }
     }
 
@@ -91,6 +97,8 @@ fs.readFile(filename, "utf8", (err, data) => {
 
       if (topups.length > 0) {
         console.log("ADD_TOPUP_FAILED DUPLICATE_TOPUP");
+      } else if (!isDateValid) {
+        console.log("ADD_TOPUP_FAILED INVALID_DATE");
       } else {
         switch (devices) {
           case "FOUR_DEVICE":

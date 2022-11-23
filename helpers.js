@@ -9,24 +9,30 @@ dayjs.extend(customParseFormat);
 
 module.exports = {
   runner: (
+    isDateValid,
     category,
     type,
     date,
     personalRenewalAmount,
     premiumRenewalAmount
   ) => {
-    switch (type) {
-      case "FREE":
-        printer(category, date, FREE_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
-        return 0;
+    if (!isDateValid) {
+      console.log("ADD_SUBSCRIPTION_FAILED INVALID_DATE");
+      return 0;
+    } else {
+      switch (type) {
+        case "FREE":
+          printer(category, date, FREE_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
+          return 0;
 
-      case "PERSONAL":
-        printer(category, date, PRESONAL_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
-        return personalRenewalAmount;
+        case "PERSONAL":
+          printer(category, date, PRESONAL_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
+          return personalRenewalAmount;
 
-      case "PREMIUM":
-        printer(category, date, PREMIUM_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
-        return premiumRenewalAmount;
+        case "PREMIUM":
+          printer(category, date, PREMIUM_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
+          return premiumRenewalAmount;
+      }
     }
   },
 };
