@@ -3,6 +3,6 @@ const assert = require("assert"),
 
 describe("runner function", function () {
   it("should not throw any error", function () {
-    assert.equal(runner("", new Date, 0, 0),0);
+    assert.equal(runner("MUSIC", "FREE", new Date, 0, 0), 0);
   });
 });

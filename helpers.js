@@ -1,8 +1,8 @@
 const dayjs = require("dayjs"),
   customParseFormat = require("dayjs/plugin/customParseFormat"),
-  FREE_MONTHS_TO_ADD = 1,
-  PRESONAL_MONTHS_TO_ADD = 1,
-  PREMIUM_MONTHS_TO_ADD = 3,
+  FREE_MONTHS_TO_ADD = 0,
+  PRESONAL_MONTHS_TO_ADD = 0,
+  PREMIUM_MONTHS_TO_ADD = 2,
   DAYS_TO_SUBTRACT = 10;
 
 dayjs.extend(customParseFormat);

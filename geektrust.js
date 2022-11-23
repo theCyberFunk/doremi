@@ -2,13 +2,21 @@ const fs = require("fs"),
   filename = process.argv[2],
   dayjs = require("dayjs"),
   customParseFormat = require("dayjs/plugin/customParseFormat"),
-  { runner } = require("./helpers");
+  { runner } = require("./helpers"),
+  TOPUP_COST_FOUR_DEVICES = 50,
+  TOPUP_COST_TEN_DEVICES = 100,
+  MUSIC_PERSONAL_PLAN_COST = 100,
+  MUSIC_PREMIUM_PLAN_COST = 250,
+  VIDEO_PERSONAL_PLAN_COST = 200,
+  VIDEO_PREMIUM_PLAN_COST = 500,
+  PODCAST_PERSONAL_PLAN_COST = 100,
+  PODCAST_PREMIUM_PLAN_COST = 300;
 
 dayjs.extend(customParseFormat);
 
 fs.readFile(filename, "utf8", (err, data) => {
   if (err) throw err;
-  let inputLines = data.toString().split("\r\n");
+  let inputLines = data.toString().split("\n");
   // console.log(inputLines)
 
   let startDate,
@@ -39,57 +47,71 @@ fs.readFile(filename, "utf8", (err, data) => {
       let category = line.split(" ")[1],
         type = line.split(" ")[2];
 
-      switch (category) {
-        case "MUSIC":
-          amount += runner(category, type, startDate, 100, 250);
-          break;
+      if (subscriptions.includes(category)) {
+        console.log("ADD_SUBSCRIPTION_FAILED DUPLICATE_CATEGORY");
+      } else {
+        switch (category) {
+          case "MUSIC":
+            amount += runner(
+              category,
+              type,
+              startDate,
+              MUSIC_PERSONAL_PLAN_COST,
+              MUSIC_PREMIUM_PLAN_COST
+            );
+            break;
 
-        case "VIDEO":
-          amount += runner(category, type, startDate, 200, 500);
-          break;
+          case "VIDEO":
+            amount += runner(
+              category,
+              type,
+              startDate,
+              VIDEO_PERSONAL_PLAN_COST,
+              VIDEO_PREMIUM_PLAN_COST
+            );
+            break;
 
-        case "PODCAST":
-          amount += runner(category, type, startDate, 100, 300);
-          break;
+          case "PODCAST":
+            amount += runner(
+              category,
+              type,
+              startDate,
+              PODCAST_PERSONAL_PLAN_COST,
+              PODCAST_PREMIUM_PLAN_COST
+            );
+            break;
+        }
+        subscriptions.push(category);
       }
-      subscriptions.push(category);
     }
 
     if (line.startsWith("ADD_TOPUP")) {
       let devices = line.split(" ")[1],
         months = line.split(" ")[2];
 
-      switch (devices) {
-        case "FOUR_DEVICE":
-          amount += 50 * months;
-          break;
+      if (topups.length > 0) {
+        console.log("ADD_TOPUP_FAILED DUPLICATE_TOPUP");
+      } else {
+        switch (devices) {
+          case "FOUR_DEVICE":
+            amount += TOPUP_COST_FOUR_DEVICES * months;
+            break;
 
-        case "TEN_DEVICE":
-          amount += 100 * months;
-          break;
+          case "TEN_DEVICE":
+            amount += TOPUP_COST_TEN_DEVICES * months;
+            break;
+        }
+        topups.push(devices);
+      }
+    }
+
+    if (line.startsWith("PRINT_RENEWAL_DETAILS")) {
+      if (subscriptions.length === 0) {
+        console.log("SUBSCRIPTIONS_NOT_FOUND");
+        return;
+      } else {
+        console.log("RENEWAL_AMOUNT " + `${amount}`);
       }
     }
   }
-
-  console.log("RENEWAL_AMOUNT " + `${amount}`);
 });
-
-// // Subscriptions existance check //
-// if (!Object.keys(subsToAdd) || Object.keys(subsToAdd).length === 0) {
-//   console.log("SUBSCRIPTIONS_NOT_FOUND");
-//   return;
-// }
-
-// // Subscriptions duplicate check //
-// let subsKeys = Object.keys(subsToAdd);
-// let subsSet = new Set(subsKeys);
-// if (subsKeys.length !== subsSet.length) {
-//   console.log("ADD_SUBSCRIPTION_FAILED DUPLICATE_CATEGORY");
-//   return;
-// }
-
-// // Topup duplicate check //
-// if (Object.keys(topupToAdd).length > 1) {
-//   console.log("ADD_SUBSCRIPTION_FAILED DUPLICATE_CATEGORY");
-//   return;
-// }
