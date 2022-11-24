@@ -23,7 +23,8 @@ fs.readFile(filename, "utf8", (err, data) => {
     subscriptions = [],
     topups = [],
     amount = 0,
-    isDateValid = true;
+    isDateValid = true,
+    outputString = "";
 
   // Add your code here to process input commands
 
@@ -53,9 +54,10 @@ fs.readFile(filename, "utf8", (err, data) => {
       if (subscriptions.includes(category)) {
         console.log("ADD_SUBSCRIPTION_FAILED DUPLICATE_CATEGORY");
       } else {
+        let result;
         switch (category) {
           case "MUSIC":
-            amount += runner(
+            result = runner(
               isDateValid,
               category,
               type,
@@ -63,10 +65,12 @@ fs.readFile(filename, "utf8", (err, data) => {
               MUSIC_PERSONAL_PLAN_COST,
               MUSIC_PREMIUM_PLAN_COST
             );
+            amount += result.amount;
+            outputString += result.output;
             break;
 
           case "VIDEO":
-            amount += runner(
+            result = runner(
               isDateValid,
               category,
               type,
@@ -74,10 +78,12 @@ fs.readFile(filename, "utf8", (err, data) => {
               VIDEO_PERSONAL_PLAN_COST,
               VIDEO_PREMIUM_PLAN_COST
             );
+            amount += result.amount;
+            outputString += result.output;
             break;
 
           case "PODCAST":
-            amount += runner(
+            result = runner(
               isDateValid,
               category,
               type,
@@ -85,6 +91,8 @@ fs.readFile(filename, "utf8", (err, data) => {
               PODCAST_PERSONAL_PLAN_COST,
               PODCAST_PREMIUM_PLAN_COST
             );
+            amount += result.amount;
+            outputString += result.output;
             break;
         }
         isDateValid ? subscriptions.push(category) : null;
@@ -118,7 +126,7 @@ fs.readFile(filename, "utf8", (err, data) => {
         console.log("SUBSCRIPTIONS_NOT_FOUND");
         return;
       } else {
-        console.log("RENEWAL_AMOUNT " + `${amount}`);
+        console.log(outputString + "RENEWAL_AMOUNT " + `${amount}`);
       }
     }
   }

@@ -22,29 +22,51 @@ module.exports = {
     } else {
       switch (type) {
         case "FREE":
-          printer(category, date, FREE_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
-          return 0;
+          return {
+            amount: 0,
+            output: printer(
+              category,
+              date,
+              FREE_MONTHS_TO_ADD,
+              DAYS_TO_SUBTRACT
+            ),
+          };
 
         case "PERSONAL":
-          printer(category, date, PRESONAL_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
-          return personalRenewalAmount;
+          return {
+            amount: personalRenewalAmount,
+            output: printer(
+              category,
+              date,
+              PRESONAL_MONTHS_TO_ADD,
+              DAYS_TO_SUBTRACT
+            ),
+          };
 
         case "PREMIUM":
-          printer(category, date, PREMIUM_MONTHS_TO_ADD, DAYS_TO_SUBTRACT);
-          return premiumRenewalAmount;
+          return {
+            amount: premiumRenewalAmount,
+            output: printer(
+              category,
+              date,
+              PREMIUM_MONTHS_TO_ADD,
+              DAYS_TO_SUBTRACT
+            ),
+          };
       }
     }
   },
 };
 
 const printer = (category, date, monthToAdd, daysToSubtract) => {
-  console.log(
+  return (
     "RENEWAL_REMINDER " +
-      category +
-      " " +
-      `${dayjs(date)
-        .add(monthToAdd, "month")
-        .subtract(daysToSubtract, "days")
-        .format("DD-MM-YYYY")}`
+    category +
+    " " +
+    `${dayjs(date)
+      .add(monthToAdd, "month")
+      .subtract(daysToSubtract, "days")
+      .format("DD-MM-YYYY")}` +
+    "\n"
   );
 };
